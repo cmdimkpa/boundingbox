@@ -25,11 +25,37 @@ Click the `Reset` button at any time to reset your session. This will delete all
 
 You can also change the image by scrolling with `>` or `<`.
 
-## Front End: BBDisplay.html
+## Back End: Web_Service.py
 
-The front end is based on a `Slideshow` component from `W3 Schools` and uses some custom `JavaScript` functions for control. `jQuery` is used for making `API calls` to the backend.
+The backend is a `Flask` API that is productionized with `Eventlet` via `Flask_SocketIO` extension. 
 
-### Drawing Bounding Boxes
+It is hosted on a private server at `http://app.tr1pp.me:3024`, which is an `AWS EC2 Instance`.
 
-To draw a bounding box, the system listens for a sequence of `4 clicks`. The locations of the 4 clicks are then transmitted to the `image editing` component of the backend `webservice`. The component then proceeds to draw the bounding box on a copy of the image at the server and returns the view to be displayed by the front end. The edits are `cummulative`, and each respective box is collaged with the previous set. Although automatic regression is not supported, you can manually scroll back to previous states by adjusting the `index` parameter in the browser URL.
+### Data Storage
+
+Two types of data are stored:
+
+1. `edit_counts` of base images. This is stored directly `In memory` and indirectly via the `database`.
+2. Current positions of all edits for a particular base image. This is stored in the `localdb`, a serialized `JSON` object.
+
+We also use the array count of current positions of a base image to know the edit count (indirect linkage mentioned above). We have `getter` and `setter` functions for our database which we use as needed.
+
+### Image Editing
+
+We use the `Python Image Library (PIL)` via the `Pillow` project, for editing the images (drawing bounding boxes) via `ImageDraw`.
+
+We have a function `add_bounding_box_to_image` that handles this. The only siginificant data transformation here is the conversion of points from the way they were originally sent via the API to the form usable by this function, and this happens using `make_points(coordset)`.
+
+We also use a `rolling edit` scheme that supports `collaging` while also allowing you to preserve individual states of the image. 
+
+#### Possible Bug
+We noticed some `skewing` in the bounding box positions and size relative to what was actually clicked. This will be resolved in future versions of the application.
+
+### Use of Nonces
+
+We use `nonces` in naming images and URLs to force the browser to load from server, because we initially noticed the server was caching images a lot, which would have been disastrous for the application.
+
+
+
+
 
