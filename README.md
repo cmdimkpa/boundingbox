@@ -56,6 +56,18 @@ We noticed some `skewing` in the bounding box positions and size relative to wha
 We use `nonces` in naming images and URLs to force the browser to load from server, because we initially noticed the server was caching images a lot, which would have been disastrous for the application.
 
 
+### Endpoints: New Box
 
+This endpoint writes a new bounding box to the base image and returns the updated URL, which is then loaded by the browser from the front end.
 
+#### closing the box
 
+The system adds the first position in the position array to the end of the array in order to close the bounding box.
+
+### Endpoints: New Session
+
+This endpoint clears all image edits and resets the image database entry and image edit count.
+
+### Endpoints: Serve Image
+
+The endpoint returns the images requested from the server.
