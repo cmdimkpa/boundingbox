@@ -1,11 +1,11 @@
 # boundingbox
 Welcome to the boundingbox project.
 
-To start a new session, visit: http://app.tr1pp.me:3024/boundingbox/api/serve_image?image=bottles&index=0
-
 Note: all global users of the application share the same session, so you might find other users' edits on your view of the image. Always make sure to click the `RESET` button to clear old sessions and force a new session. If you want to load the next image, use the `scroll` buttons: `>` and `<` to navigate.
 
 There are only two (2) images available presently: `bottles` & `xmen`.
+
+To start a new session, visit: http://app.tr1pp.me:3024/boundingbox/api/serve_image?image=bottles&index=0
 
 # Design
 
