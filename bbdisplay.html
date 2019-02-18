@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>BoundingBox project</title>
+      <meta http-equiv="Pragma" content="no-cache">
+      <meta http-equiv="Expires" content="-1">
+      <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <script src="https://code.jquery.com/jquery-3.3.1.min.js" ></script>
+    </head>
+    <body>
+      <style>
+          .button {
+          background-color: #4CAF50;
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+        }
+      </style>
+      <div><h2 class="w3-center">trace a bounding box on this image</h2><button class="button" onclick="new_session()">Reset</button></div>
+      <div class="w3-content w3-display-container">
+  <img class="mySlides" src="{{ image }}" style="width:100%">
+  <button class="w3-button w3-black w3-display-left" onclick="nextImage()">&#10094;</button>
+  <button class="w3-button w3-black w3-display-right" onclick="nextImage()">&#10095;</button>
+</div>
+</div>
+        <script>
+
+        function nextImage(){
+          var image = getUrlParameter("image")
+          if (image == "bottles"){
+            window.location.href = "http://app.tr1pp.me:3024/boundingbox/api/serve_image?image=xmen&index=0"
+          } else {
+            window.location.href = "http://app.tr1pp.me:3024/boundingbox/api/serve_image?image=bottles&index=0"
+          }
+        }
+
+        function new_session(){
+          var image = getUrlParameter("image")
+          // make API call to refresh session for current image
+          $.ajax ({
+                url: "http://app.tr1pp.me:3024/boundingbox/api/new_session/"+image,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function(data,status,xhr){
+                    // redirect to initial image display
+                    window.location.href = "http://app.tr1pp.me:3024/boundingbox/api/serve_image?image="+image+"&index=0"
+                }
+            });
+        }
+
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        };
+
+        $(document).ready(function(){
+          var clicks = 0;
+          var pos = [];
+          $( ".mySlides" ).click(function(e) {
+            clicks++;
+            var posX = e.pageX - $(this).offset().left,
+                posY = e.pageY - $(this).offset().top;
+            pos.push([posX,posY])
+            if (clicks == 4) {
+              // make POST request to image editing service
+              $.ajax ({
+                    url: "http://app.tr1pp.me:3024/boundingbox/api/new_box",
+                    type: "POST",
+                    data: JSON.stringify({image:getUrlParameter("image"),box:pos}),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data,status,xhr){
+                        // redirect to new image display
+                        window.location.href = data.data.url
+                    }
+                });
+              // reset stores
+              clicks = 0;
+              pos = [];
+            }
+          });
+        });
+
+        </script>
+      </body>
+    </html>
